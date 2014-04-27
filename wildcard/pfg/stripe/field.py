@@ -167,21 +167,18 @@ class FGStripeField(FGStringField):
             stripeCurrency='USD'
         )
 
-    # XXX note, we don't have to make one for amounts field, I don't understand
-    # why this is so...
+    security.declareProtected(ModifyPortalContent, 'getStripeSecretKey')
+    def getStripeSecretKey(self):
+        return self.fgField.stripeSecretKey
 
-    security.declareProtected(View, 'getAmounts')
-    def getAmounts(self):
-        return self.fgField.amounts
-
-    security.declareProtected(ModifyPortalContent, 'setAmounts')
-    def setAmounts(self, value, **kw):
-        self.fgField.amounts = value
+    security.declareProtected(ModifyPortalContent, 'setStripeSecretKey')
+    def setStripeSecretKey(self, value, **kw):
+        self.fgField.stripeSecretKey = value
 
     # yikes, I'm lazy
-    for fieldName in ['variable', 'variableLabel', 'fixedPrice',
-                      'stripeSecretKey', 'stripePublishableKey',
-                      'stripePanelLabel', 'stripeLabel', 'stripeCurrency']:
+    for fieldName in ['amounts', 'variable', 'variableLabel', 'fixedPrice',
+                      'stripePublishableKey', 'stripePanelLabel',
+                      'stripeLabel', 'stripeCurrency']:
         upper = fieldName[0].upper() + fieldName[1:]
         exec('''
 security.declareProtected(View, 'get%(upper)s')
