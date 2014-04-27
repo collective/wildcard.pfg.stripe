@@ -31,7 +31,6 @@
 
         var amount = null;
         var $fixed = $('.fixed', $widget);
-        debugger;
         if($fixed.length > 0){
           amount = $('.fixed-value', $fixed).val();
         }else{
@@ -78,7 +77,7 @@
         if($token.val() && $original.val() === amount){
           // check for feild error, if there was, re-try CC
           var $parent = $widget.parent();
-          if($parent.find('.fieldErrorBox').length === 0){
+          if(!$parent.hasClass('error')){
             // no change, skip out here
             return;
           }

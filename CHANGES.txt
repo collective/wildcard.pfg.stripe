@@ -6,6 +6,7 @@ Changelog
 
 - protect stripe secret better
 
+- handle form errors better
 
 1.0a2 (2014-04-26)
 ------------------
