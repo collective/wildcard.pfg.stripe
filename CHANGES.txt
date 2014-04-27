@@ -1,7 +1,7 @@
 Changelog
 =========
 
-1.0dev (unreleased)
+1.0a3 (2014-04-26)
 -------------------
 
 - protect stripe secret better
