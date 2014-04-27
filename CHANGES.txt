@@ -1,10 +1,10 @@
 Changelog
 =========
 
-1.0a4 (unreleased)
+1.0a4 (2014-04-26)
 ------------------
 
-- nothing yet
+- fix amounts field to get and save data consistently
 
 1.0a3 (2014-04-26)
 -------------------

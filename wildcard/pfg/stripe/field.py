@@ -1,4 +1,3 @@
-import requests
 from AccessControl import ClassSecurityInfo
 
 from Products.CMFCore.permissions import View, ModifyPortalContent
@@ -60,6 +59,8 @@ class FGStripeField(FGStringField):
         LinesField(
             'amounts',
             required=False,
+            accessor="getAmounts",
+            mutator="setAmounts",
             searchable=False,
             widget=LinesWidget(
                 label='Available amounts',
@@ -175,8 +176,17 @@ class FGStripeField(FGStringField):
     def setStripeSecretKey(self, value, **kw):
         self.fgField.stripeSecretKey = value
 
+    security.declareProtected(View, 'getAmounts')
+    def getAmounts(self):
+        return self.fgField.amounts
+
+    security.declareProtected(ModifyPortalContent, 'setAmounts')
+    def setAmounts(self, value, **kw):
+        self.fgField.amounts = value
+        self.amounts = value
+
     # yikes, I'm lazy
-    for fieldName in ['amounts', 'variable', 'variableLabel', 'fixedPrice',
+    for fieldName in ['variable', 'variableLabel', 'fixedPrice',
                       'stripePublishableKey', 'stripePanelLabel',
                       'stripeLabel', 'stripeCurrency']:
         upper = fieldName[0].upper() + fieldName[1:]
