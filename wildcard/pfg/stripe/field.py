@@ -128,6 +128,11 @@ class FGStripeField(FGStringField):
     ))
     schema['required'].default = True
     schema['required'].widget.visible['edit'] = 'hidden'
+    schema['hidden'].widget.visible['edit'] = 'hidden'
+    schema['fgDefault'].widget.visible['edit'] = 'hidden'
+    schema['fgmaxlength'].widget.visible['edit'] = 'hidden'
+    schema['fgsize'].widget.visible['edit'] = 'hidden'
+    schema['fgStringValidator'].widget.visible['edit'] = 'hidden'
 
     finalizeFieldSchema(schema, folderish=True, moveDiscussion=False)
 
@@ -147,7 +152,11 @@ class FGStripeField(FGStringField):
             required=0,
             write_permission=View,
             widget=StripeWidget(),
-            amounts=(),
+            amounts=(
+                '10.00',
+                '25.00',
+                '50.00',
+                '100.00'),
             variable=True,
             variableLabel='Amount: $',
             fixedPrice='0.00',
