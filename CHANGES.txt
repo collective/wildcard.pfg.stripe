@@ -1,10 +1,10 @@
 Changelog
 =========
 
-1.0a5 (unreleased)
+1.1b1 (2014-05-08)
 ------------------
 
-- nothing
+- send form data to stripe as metadata
 
 1.0a4 (2014-04-26)
 ------------------

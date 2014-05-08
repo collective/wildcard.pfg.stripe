@@ -1,11 +1,68 @@
+import string
+from zope.contenttype import guess_content_type
+from ZPublisher.HTTPRequest import FileUpload
 from Products.Archetypes.interfaces.field import IField
 from Products.CMFPlone.utils import safe_hasattr
 from Products.CMFCore.Expression import getExprContext
 from wildcard.pfg.stripe.interfaces import IStripeField
 import requests
 import logging
+from types import StringTypes
 
 logger = logging.getLogger('wildcard.pfg.stripe')
+
+valid_chars = "_%s" % string.ascii_letters
+
+
+def convert(val):
+    try:
+        return val.fCommonZ()
+    except:
+        if type(val) in (list, tuple):
+            return ', '.join(val)
+        try:
+            return str(val)
+        except:
+            return repr(val)
+
+
+def getData(obj, fields, req):
+    data = {}
+    for f in fields:
+        fieldname = f.__name__
+        showFields = getattr(obj, 'showFields', [])
+        if showFields and f.id not in showFields:
+            continue
+        if f.isFileField():
+            file = req.form.get('%s_file' % f.fgField.getName())
+            if isinstance(file, FileUpload) and file.filename != '':
+                file.seek(0)
+                fdata = file.read()
+                filename = file.filename
+                mimetype, enc = guess_content_type(filename, fdata, None)
+                if mimetype.find('text/') >= 0:
+                    # convert to native eols
+                    fdata = fdata.replace('\x0d\x0a', '\n').replace(
+                        '\x0a', '\n').replace('\x0d', '\n')
+                    data[fieldname] = '%s:%s:%s:%s' % (filename, mimetype,
+                                                       enc, fdata)
+                else:
+                    data[fieldname] = '%s:%s:%s:Binary upload discarded' % (
+                        filename, mimetype, enc)
+            else:
+                data[fieldname] = 'NO UPLOAD'
+        elif not f.isLabel():
+            val = req.form.get(f.fgField.getName(), '')
+            if not type(val) in StringTypes:
+                # Zope has marshalled the field into
+                # something other than a string
+                data[fieldname] = str(val)
+            elif type(val) == dict:
+                data.update(val)
+            else:
+                data[fieldname] = convert(val)
+
+    return data
 
 
 def fgProcessActionAdapters(self, errors, fields=None, REQUEST=None):
@@ -57,6 +114,12 @@ def fgProcessActionAdapters(self, errors, fields=None, REQUEST=None):
                         # return the dict, which hopefully uses
                         # field ids or FORM_ERROR_MARKER for keys
                         return result
+
+        try:
+            data = getData(self, fields, REQUEST)
+        except:
+            logger.info('could not collect stripe metadata')
+            data = {}
         # see if there is a stripe field
         fields = [fo for fo in self._getFieldObjects()
                   if IStripeField.providedBy(fo)]
@@ -64,14 +127,21 @@ def fgProcessActionAdapters(self, errors, fields=None, REQUEST=None):
         for field in fields:
             name = field.fgField.getName()
             value = REQUEST.form[name]
+            params = {
+                'amount': value['amount'],
+                'currency': field.getStripeCurrency(),
+                'card': value['token']
+            }
+            for key, value in data.items():
+                if key != name:
+                    # size limits here too
+                    key = "metadata[%s]" % (
+                        ''.join(c for c in key if c in valid_chars))
+                    params[key] = value[:200]
             resp = requests.post(
                 'https://api.stripe.com/v1/charges',
                 auth=(field.getStripeSecretKey(), ''),
-                data={
-                    'amount': value['amount'],
-                    'currency': field.getStripeCurrency(),
-                    'card': value['token']
-                }
+                data=params
             )
             try:
                 data = resp.json()
