@@ -132,7 +132,11 @@ def fgProcessActionAdapters(self, errors, fields=None, REQUEST=None):
                 'currency': field.getStripeCurrency(),
                 'card': value['token']
             }
+            mcount = 0
             for key, value in data.items():
+                mcount += 1
+                if mcount >= 10:
+                    break
                 if key != name:
                     # size limits here too
                     key = "metadata[%s]" % (

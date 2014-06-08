@@ -15,3 +15,9 @@ How to use
 - install and activate addon on site
 - on a PloneFormGen form, add a `Stripe Field`
 - enter necessary field settings
+
+
+Field Data
+----------
+
+Will send data for up to 10 fields to stripe with payment.
