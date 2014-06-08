@@ -1,6 +1,12 @@
 Changelog
 =========
 
+1.1b2 (2014-06-08)
+------------------
+
+- only send up to 10 metatdata fields, otherwise submission fails.
+
+
 1.1b1 (2014-05-08)
 ------------------
 
