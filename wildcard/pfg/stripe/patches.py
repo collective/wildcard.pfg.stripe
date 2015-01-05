@@ -132,16 +132,21 @@ def fgProcessActionAdapters(self, errors, fields=None, REQUEST=None):
                 'currency': field.getStripeCurrency(),
                 'card': value['token']
             }
-            mcount = 0
-            for key, value in data.items():
-                if key != name and value:
-                    mcount += 1
-                    if mcount >= 10:
-                        break
-                    # size limits here too
-                    key = "metadata[%s]" % (
-                        ''.join(c for c in key if c in valid_chars))
-                    params[key] = value[:200]
+            mdata_fields = field.getStripeMetadata()
+            if mdata_fields and type(mdata_fields) in (list, tuple, set):
+                mcount = 0
+                for key in mdata_fields:
+                    if key in data:
+                        value = data[key]
+                        if not value:
+                            continue
+                        mcount += 1
+                        if mcount >= 10:
+                            break
+                        # size limits here too
+                        key = "metadata[%s]" % (
+                            ''.join(c for c in key if c in valid_chars))
+                        params[key] = value[:200]
             resp = requests.post(
                 'https://api.stripe.com/v1/charges',
                 auth=(field.getStripeSecretKey(), ''),

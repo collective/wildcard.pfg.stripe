@@ -1,6 +1,11 @@
 Changelog
 =========
 
+1.1b4 (2015-01-05)
+------------------
+
+- be able to select metadata fields to include
+
 1.1b3 (2015-01-05)
 ------------------
 

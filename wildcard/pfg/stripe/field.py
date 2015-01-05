@@ -1,3 +1,4 @@
+from Acquisition import aq_parent, aq_inner
 from AccessControl import ClassSecurityInfo
 
 from Products.CMFCore.permissions import View, ModifyPortalContent
@@ -6,12 +7,14 @@ from Products.Archetypes.Field import (
     StringField, LinesField, BooleanField, FixedPointField, ObjectField
 )
 from Products.Archetypes.Widget import (
-    StringWidget, LinesWidget, BooleanWidget, DecimalWidget)
+    StringWidget, LinesWidget, BooleanWidget, DecimalWidget, MultiSelectionWidget)
 from Products.ATContentTypes.content.base import registerATCT
 
 from Products.PloneFormGen.content.fields import FGStringField
 from Products.PloneFormGen.content.fieldsBase import finalizeFieldSchema
 from Products.Archetypes.Registry import registerField
+from Products.Archetypes.public import DisplayList
+from Products.PloneFormGen.interfaces import IPloneFormGenField
 
 from wildcard.pfg.stripe.config import PROJECTNAME
 from wildcard.pfg.stripe.widget import StripeWidget
@@ -126,6 +129,15 @@ class FGStripeField(FGStringField):
             default='USD',
             widget=StringWidget(label='3 letter ISO currency code')
         ),
+        LinesField(
+            'stripeMetadata',
+            required=False,
+            default=[],
+            vocabulary='getPFGFields',
+            multiValued=True,
+            widget=MultiSelectionWidget(
+                label='Metadata Fields',
+                description='Select the fields that should be included as metadata'))
     ))
     schema['required'].default = True
     schema['required'].widget.visible['edit'] = 'hidden'
@@ -168,20 +180,33 @@ class FGStripeField(FGStringField):
             stripeCurrency='USD'
         )
 
+    def getPFGFields(self):
+        form = aq_parent(aq_inner(self))
+        if form.portal_type == 'TempFolder':
+            form = aq_parent(form)
+        values = []
+        for field in form.values():
+            if (IPloneFormGenField.providedBy(field)
+                    and not IStripeField.providedBy(field)):
+                values.append((
+                    field.getId(),
+                    field.Title()))
+        return DisplayList(values)
+
     security.declareProtected(ModifyPortalContent, 'getStripeSecretKey')
-    def getStripeSecretKey(self):
+    def getStripeSecretKey(self):  # noqa
         return self.fgField.stripeSecretKey
 
     security.declareProtected(ModifyPortalContent, 'setStripeSecretKey')
-    def setStripeSecretKey(self, value, **kw):
+    def setStripeSecretKey(self, value, **kw):  # noqa
         self.fgField.stripeSecretKey = value
 
     security.declareProtected(View, 'getAmounts')
-    def getAmounts(self):
+    def getAmounts(self):  # noqa
         return self.fgField.amounts
 
     security.declareProtected(ModifyPortalContent, 'setAmounts')
-    def setAmounts(self, value, **kw):
+    def setAmounts(self, value, **kw):  # noqa
         self.fgField.amounts = value
         self.amounts = value
 

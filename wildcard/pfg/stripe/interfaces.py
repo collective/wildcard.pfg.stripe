@@ -1,5 +1,5 @@
-from zope.interface import Interface
+from Products.PloneFormGen.interfaces import IPloneFormGenField
 
 
-class IStripeField(Interface):
+class IStripeField(IPloneFormGenField):
     pass

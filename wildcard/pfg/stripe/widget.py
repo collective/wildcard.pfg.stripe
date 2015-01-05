@@ -7,7 +7,7 @@ class StripeWidget(StringWidget):
     _properties = StringWidget._properties.copy()
     _properties.update({
         'macro': "stripewidget",
-        })
+    })
 
     def process_form(self, instance, field, form, empty_marker=None,
                      emptyReturnsMarker=False):
