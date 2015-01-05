@@ -110,7 +110,7 @@ def fgProcessActionAdapters(self, errors, fields=None, REQUEST=None):
                 if doit:
                     result = actionAdapter.onSuccess(fields,
                                                      REQUEST=REQUEST)
-                    if type(result) is type({}) and len(result):
+                    if type(result) is type({}) and len(result):  # noqa
                         # return the dict, which hopefully uses
                         # field ids or FORM_ERROR_MARKER for keys
                         return result
@@ -134,10 +134,10 @@ def fgProcessActionAdapters(self, errors, fields=None, REQUEST=None):
             }
             mcount = 0
             for key, value in data.items():
-                mcount += 1
-                if mcount >= 10:
-                    break
-                if key != name:
+                if key != name and value:
+                    mcount += 1
+                    if mcount >= 10:
+                        break
                     # size limits here too
                     key = "metadata[%s]" % (
                         ''.join(c for c in key if c in valid_chars))
