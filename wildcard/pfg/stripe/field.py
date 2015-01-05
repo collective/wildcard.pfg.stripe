@@ -137,7 +137,8 @@ class FGStripeField(FGStringField):
             multiValued=True,
             widget=MultiSelectionWidget(
                 label='Metadata Fields',
-                description='Select the fields that should be included as metadata'))
+                description='Select the fields that should be included as metadata. '
+                            'You can only include 10 fields. Extras will be striped.'))
     ))
     schema['required'].default = True
     schema['required'].widget.visible['edit'] = 'hidden'

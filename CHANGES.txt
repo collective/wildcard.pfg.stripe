@@ -1,6 +1,11 @@
 Changelog
 =========
 
+1.1b5 (2015-01-05)
+------------------
+
+- warn users they can only include 10 fields
+
 1.1b4 (2015-01-05)
 ------------------
 
