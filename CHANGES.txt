@@ -1,6 +1,12 @@
 Changelog
 =========
 
+1.1b6 (2015-04-09)
+------------------
+
+- set receipt_email on stripe api call so automatic
+  receipts can be sent out.
+
 1.1b5 (2015-01-05)
 ------------------
 

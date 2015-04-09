@@ -130,7 +130,8 @@ def fgProcessActionAdapters(self, errors, fields=None, REQUEST=None):
             params = {
                 'amount': value['amount'],
                 'currency': field.getStripeCurrency(),
-                'card': value['token']
+                'source': value['token'],
+                'receipt_email': value['charge_data'].get('email')
             }
             mdata_fields = field.getStripeMetadata()
             if mdata_fields and type(mdata_fields) in (list, tuple, set):
