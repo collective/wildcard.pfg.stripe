@@ -84,13 +84,29 @@
         }
 
         $('.stripe-original-amount', $widget).attr('value', amount);
-        amount = amount.replace('.', '').replace('$', '');
+        if(amount.indexOf('.') === -1){
+          // does not include cents
+          amount = amount += '.00';
+        }
+        amount = amount.replace('$', '');
+        var cents = amount.split('.')[1].substring(0, 2);
+        amount = amount.split('.')[0];
+        amount = amount + cents;
+
+        if(isNaN(amount)){
+          alert('Not a valid value');
+          return;
+        }
+
         $('.stripe-amount', $widget).attr('value', amount);
+
+        var formatted = '$' + amount.substring(0, amount.length - 2) + '.' +
+                              amount.substring(amount.length - 2);
 
         e.preventDefault();
         handler.open({
           name: $widget.attr('data-stripe-label'),
-          description: $widget.attr('data-stripe-panelLabel'),
+          description: $widget.attr('data-stripe-panelLabel') + ': ' + formatted,
           amount: amount
         });
       });
